@@ -20,13 +20,14 @@ public class User {
 	
 	private String uname;
 	
+	@Column(unique = true)
 	private String email;
 	
 	private String phoneno;
 	
 	@JoinColumn(name="r_id")
 	@ManyToOne
-	private Role role;
+	private Role role;	
 	
 	private String password;
 	

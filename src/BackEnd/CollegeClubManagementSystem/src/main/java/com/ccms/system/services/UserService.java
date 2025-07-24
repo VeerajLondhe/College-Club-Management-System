@@ -1,5 +1,7 @@
 package com.ccms.system.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +29,14 @@ public class UserService {
 		return urepo.save(u);
 	}
 	
+	
 	public User getUserById(int id)
 	{
 	  return urepo.findById(id).get();	
 	}
+	
+	
+	 public Optional<User> login(String username, String password) {
+	        return urepo.loginNative(username, password);
+	    }
 }
