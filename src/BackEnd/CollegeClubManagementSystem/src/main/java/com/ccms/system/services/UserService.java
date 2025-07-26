@@ -3,6 +3,9 @@ package com.ccms.system.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,19 +23,35 @@ public class UserService {
 	@Autowired
 	RoleRepository rrepo;
 	
-	public User insertData(User u) {
+//	public User insertData(User u) {
+//		int roleId=u.getRole().getRid();
+//		Role role=rrepo.findById(roleId).get();
+//		
+//		u.setRole(role);
+//		
+//		return urepo.save(u);
+//	}
+	
+	public ResponseEntity<User> insertData(User u) {
+		try {
 		int roleId=u.getRole().getRid();
 		Role role=rrepo.findById(roleId).get();
-		
 		u.setRole(role);
-		
-		return urepo.save(u);
+		urepo.save(u);
+		return new ResponseEntity<>(u,HttpStatus.CREATED);
+		}catch(Exception e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	
-	public User getUserById(int id)
+	public ResponseEntity<User> getUserById(int id)
 	{
-	  return urepo.findById(id).get();	
+	  Optional<User> user=urepo.findById(id);
+	  if(user.isPresent()) {
+		  return new ResponseEntity<>(user.get(),HttpStatus.OK);
+	  }
+	  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	
