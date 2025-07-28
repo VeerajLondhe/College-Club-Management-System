@@ -1,5 +1,7 @@
 package com.ccms.system.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -13,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.ccms.system.dto.UserLog;
 import com.ccms.system.entities.User;
 import com.ccms.system.services.UserService;
 
 @RestController
-@RequestMapping("/ccms")
+@RequestMapping("/ccms/user")
 public class RegistrationController {
 	
 	@Autowired
@@ -34,11 +37,17 @@ public class RegistrationController {
 	  return uservice.getUserById(id);
 	}
 	
-	@GetMapping("/login")
-	public User login(@RequestParam String username, @RequestParam String password) {
-	    return uservice.login(username, password)
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"))
-;
+	@GetMapping("/all")
+	public List<User> getAll(){
+		return uservice.getAll();
 	}
-
+	
+	@PostMapping("/login")
+	public User login(@RequestBody UserLog user) {
+		String username=user.getUsername();
+		String password=user.getPassword();
+	    return uservice.login(username, password)
+	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+	}
+	
 }

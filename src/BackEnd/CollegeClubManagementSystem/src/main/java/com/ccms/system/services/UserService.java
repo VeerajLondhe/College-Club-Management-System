@@ -1,5 +1,6 @@
 package com.ccms.system.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,10 @@ public class UserService {
 		  return new ResponseEntity<>(user.get(),HttpStatus.OK);
 	  }
 	  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+	
+	public List<User> getAll(){
+		return urepo.findAll();
 	}
 	
 	

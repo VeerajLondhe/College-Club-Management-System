@@ -12,7 +12,7 @@ import com.ccms.system.entities.User;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-	@Query(value = "SELECT * FROM user WHERE uname = :username AND password = :password", nativeQuery = true)
+	@Query(value = "SELECT * FROM user WHERE email = :username AND password = :password", nativeQuery = true)
     Optional<User> loginNative(@Param("username") String username, @Param("password") String password);
 
 }
