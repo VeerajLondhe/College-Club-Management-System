@@ -1,0 +1,39 @@
+package com.example.demo.services;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.entities.Club;
+import com.example.demo.repositories.ClubRepository;
+
+@Service
+public class ClubService {
+
+    @Autowired
+    private ClubRepository clubRepo;
+
+    public List<Club> getAllActiveClubs() {
+        return clubRepo.findActiveClubs();
+    }
+
+    public List<Club> getAllInactiveClubs() {
+        return clubRepo.findInactiveClubs();
+    }
+
+    public Optional<Club> getClubDetails(int cid) {
+        return clubRepo.findById(cid);
+    }
+
+    public Club approveClub(int cid) {
+        Optional<Club> optionalClub = clubRepo.findById(cid);
+        if (optionalClub.isPresent()) {
+            Club club = optionalClub.get();
+            club.setStatus(true);
+            return clubRepo.save(club);
+        }
+        return null;
+    }
+}

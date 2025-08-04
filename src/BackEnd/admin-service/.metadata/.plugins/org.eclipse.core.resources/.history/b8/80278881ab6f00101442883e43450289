@@ -1,0 +1,21 @@
+package com.example.demo.controllers;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import com.example.demo.entities.Events;
+import com.example.demo.services.EventsService;
+
+@RestController
+@RequestMapping("/api/events")
+@CrossOrigin(origins = "*")
+public class EventsController {
+
+    @Autowired
+    private EventsService eventsService;
+
+    @GetMapping
+    public List<Events> getAllEvents() {
+        return eventsService.getAllEvents();
+    }
+}

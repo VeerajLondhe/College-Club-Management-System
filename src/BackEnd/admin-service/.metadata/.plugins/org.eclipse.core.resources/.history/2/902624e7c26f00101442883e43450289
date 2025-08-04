@@ -1,0 +1,20 @@
+package com.example.demo.services;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.example.demo.entities.Events;
+import com.example.demo.repositories.EventsRepository;
+
+@Service
+public class EventsService {
+
+    @Autowired
+    private EventsRepository eventRepo;
+
+    public List<Events> getEventsByActiveClubId(int cid) {
+        return eventRepo.findByClubCidAndClubStatusTrue(cid);
+    }
+}

@@ -1,0 +1,27 @@
+package com.example.demo.services;
+
+import com.example.demo.entities.Events;
+import com.example.demo.repositories.EventsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class EventsService {
+
+    @Autowired
+    private EventsRepository eventsRepository;
+
+    public List<Events> getAllEvents() {
+        return eventsRepository.findAll();
+    }
+
+    public Events getEventById(int id) {
+        return eventsRepository.findById(id).orElse(null);
+    }
+
+    public Events createEvent(Events event) {
+        return eventsRepository.save(event);
+    }
+}
