@@ -10,7 +10,7 @@ import com.example.demo.services.EventsService;
 
 @RestController
 @RequestMapping("/events")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 public class EventsController {
 
     @Autowired
