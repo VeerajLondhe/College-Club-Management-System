@@ -60,7 +60,7 @@ public class UserService {
 	}
 	
 	
-	 public Optional<User> login(String username, String password) {
-	        return urepo.loginNative(username, password);
+	 public Optional<User> login(String email, String password) {
+	        return urepo.loginNative(email, password);
 	    }
 }

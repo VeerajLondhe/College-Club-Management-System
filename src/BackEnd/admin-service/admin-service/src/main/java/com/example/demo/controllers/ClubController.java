@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/clubs")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClubController {
 
     @Autowired
