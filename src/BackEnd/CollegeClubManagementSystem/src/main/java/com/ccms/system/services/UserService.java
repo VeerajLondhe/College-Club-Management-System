@@ -71,7 +71,6 @@ public class UserService {
 		return urepo.findAll();
 	}
 	
-	
 	 public ResponseEntity<UserWithPosition> login(String username, String password) {
 		 	Optional<User> user=urepo.loginNative(username, password);
 		 	if(user.isPresent()) {
@@ -87,5 +86,5 @@ public class UserService {
 			  }
 		 	
 		 	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	    }
+     }
 }

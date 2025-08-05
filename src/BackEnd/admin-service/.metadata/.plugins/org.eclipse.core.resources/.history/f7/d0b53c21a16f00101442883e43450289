@@ -1,0 +1,56 @@
+package com.example.demo.entities;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "events")
+public class Events {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "e_id")
+    private int eid;
+
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "c_id")
+    private Club club;
+
+    public Events() {}
+
+    public Events(int eid, String description, Club club) {
+        this.eid = eid;
+        this.description = description;
+        this.club = club;
+    }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Club getClub() {
+        return club;
+    }
+
+    public void setClub(Club club) {
+        this.club = club;
+    }
+
+    @Override
+    public String toString() {
+        return "Events [eid=" + eid + ", description=" + description + ", club=" + club + "]";
+    }
+}

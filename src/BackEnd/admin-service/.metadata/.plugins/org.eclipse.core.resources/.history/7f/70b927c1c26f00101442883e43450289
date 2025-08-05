@@ -1,0 +1,23 @@
+package com.example.demo.services;
+
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.example.demo.entities.Club;
+import com.example.demo.repositories.ClubRepository;
+
+@Service
+public class ClubService {
+
+    @Autowired
+    private ClubRepository clubRepo;
+
+    public List<Club> getAllClubs() {
+        return clubRepo.findAll();
+    }
+
+    public Optional<Club> getClubById(int id) {
+        return clubRepo.findById(id);
+    }
+}

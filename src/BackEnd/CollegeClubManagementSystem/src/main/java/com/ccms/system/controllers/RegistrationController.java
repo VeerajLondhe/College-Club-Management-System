@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,6 +23,7 @@ import com.ccms.system.services.UserService;
 
 @RestController
 @RequestMapping("/ccms/user")
+@CrossOrigin(origins =  "http://localhost:3000" )
 public class RegistrationController {
 	
 	@Autowired
@@ -29,7 +31,7 @@ public class RegistrationController {
 	
 	
 	@PostMapping("/register")
-	public ResponseEntity<User> insertData(@RequestBody User u) {
+	public ResponseEntity<?> insertData(@RequestBody User u) {
 		return uservice.insertData(u);
 	}
 	@GetMapping("/getbyid")

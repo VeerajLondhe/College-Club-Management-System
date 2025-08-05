@@ -1,0 +1,16 @@
+package com.example.demo.repositories;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.example.demo.entities.Events;
+
+public interface EventsRepository extends JpaRepository<Events, Integer> {
+
+    @Query("SELECT e FROM Events e WHERE e.club.status = true")
+    List<Events> findEventsOfActiveClubs();
+
+    List<Events> findByClubCid(int cid);
+}
