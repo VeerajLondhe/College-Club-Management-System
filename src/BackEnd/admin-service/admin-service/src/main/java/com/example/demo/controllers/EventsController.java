@@ -34,7 +34,6 @@ public class EventsController {
         return approved ? "Event approved successfully" : "Event not found";
     }
 
-    // Delete event by ID (admin)
     @DeleteMapping("/delete/{eventId}")
     public String deleteEvent(@PathVariable int eventId) {
         boolean deleted = eventsService.deleteEvent(eventId);
