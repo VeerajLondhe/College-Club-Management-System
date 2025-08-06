@@ -3,10 +3,10 @@ package com.example.demo.controllers;
 import com.example.demo.entities.Club;
 import com.example.demo.services.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/clubs")
@@ -16,33 +16,45 @@ public class ClubController {
     @Autowired
     private ClubService clubService;
 
-    // Return only basic info (no events)
+    
+    @GetMapping("/all")
+    public List<Club> getAllClubs() {
+        return clubService.getAllClubs();
+    }
+
+    
     @GetMapping("/active")
-    public List<Club> getActiveClubsBasicInfo() {
-        return clubService.getActiveClubsBasicInfo();
+    public List<Club> getActiveClubs() {
+        return clubService.getActiveClubs();
+    }
+
+    
+    @GetMapping("/basic-active")
+    public List<Object[]> getBasicActiveClubs() {
+        return clubService.getBasicActiveClubs();
+    }
+
+ 
+    @GetMapping("/status/{status}")
+    public List<Club> getClubsByStatus(@PathVariable boolean status) {
+        return clubService.getClubsByStatus(status);
     }
 
     
     @GetMapping("/{id}")
-    public Club getClubById(@PathVariable int id) {
+    public Optional<Club> getClubById(@PathVariable int id) {
         return clubService.getClubById(id);
     }
+
     
-    @GetMapping("/inactive")
-    public List<Club> getAllInactiveClubs() {
-        return clubService.getAllInactiveClubs();
-    }
     @PutMapping("/approve/{id}")
-    public Club approveClub(@PathVariable int id) {
+    public String approveClub(@PathVariable int id) {
         return clubService.approveClub(id);
     }
-    @DeleteMapping("/deleteClub/{id}")
-    public ResponseEntity<String> deleteClub(@PathVariable int id) {
-        try {
-        	clubService.deleteClubById(id);
-            return ResponseEntity.ok("Club deleted successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+
+ 
+    @DeleteMapping("/delete/{id}")
+    public String deleteClub(@PathVariable int id) {
+        return clubService.deleteClub(id);
     }
 }

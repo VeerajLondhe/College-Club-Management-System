@@ -1,0 +1,73 @@
+package com.example.demo.entities;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "events")
+public class Events {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "e_id")
+    private int eid;
+
+    private String description;
+    @Column(name = "status")
+    private boolean status; // true = approved, false = pending/rejected
+
+
+    @ManyToOne
+    @JoinColumn(name = "c_id")
+    @JsonBackReference
+    private Club club;
+
+    // Default constructor
+    public Events() {}
+
+    // Parameterized constructor
+    public Events(int eid, String description, Club club) {
+        this.eid = eid;
+        this.description = description;
+        this.club = club;
+    }
+
+    // Getters and setters
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Club getClub() {
+        return club;
+    }
+
+    public void setClub(Club club) {
+        this.club = club;
+    }
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Events [eid=" + eid + ", description=" + description + "]";
+    }
+}

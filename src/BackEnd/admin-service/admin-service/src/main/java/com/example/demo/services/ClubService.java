@@ -1,12 +1,13 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Club;
+import com.example.demo.entities.User;
 import com.example.demo.repositories.ClubRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClubService {
@@ -23,38 +24,61 @@ public class ClubService {
             Integer cid = (Integer) obj[0];
             String cname = (String) obj[1];
             String description = (String) obj[2];
-            Boolean status = (Boolean) obj[3];
-            java.sql.Timestamp timestamp = (java.sql.Timestamp) obj[4];
-
-            Club club = new Club(cid, cname, description, status, timestamp, null, null);
+            java.sql.Timestamp timestamp = (java.sql.Timestamp) obj[3];
+            Boolean status = (Boolean) obj[4];
+            User userId=(User)obj[5];
+            Club club = new Club(cid, cname, description, timestamp, status,userId,null);
             clubs.add(club);
         }
 
-        return clubs;
+    
+
+    
+    public List<Club> getAllClubs() {
+        return (List<Club>) clubRepo.findAll();
+    }
+
+
+  
+    public List<Club> getActiveClubs() {
+        return clubRepo.findActiveClubs();
     }
 
     
-    public Club getClubById(int id) {
-        return clubRepo.findById(id).orElse(null);
+    public List<Object[]> getBasicActiveClubs() {
+        return clubRepo.findBasicActiveClubs();
     }
+
     
-    public List<Club> getAllInactiveClubs() {
-        return clubRepo.findByStatus(false);
+    public List<Club> getClubsByStatus(boolean status) {
+        return clubRepo.findByStatus(status);
     }
-    public Club approveClub(int id) {
-        Club club = clubRepo.findById(id).orElse(null);
-        if (club != null && !club.isStatus()) {
+
+   
+    public Optional<Club> getClubById(int id) {
+        return clubRepo.findById(id);
+    }
+
+    
+    public String approveClub(int id) {
+        Optional<Club> optionalClub = clubRepo.findById(id);
+        if (optionalClub.isPresent()) {
+            Club club = optionalClub.get();
             club.setStatus(true);
             clubRepo.save(club);
-        }
-        return club;
-    }
-    public void deleteClubById(int id) {
-        if (clubRepo.existsById(id)) {
-            clubRepo.deleteById(id);
+            return "Club approved successfully.";
         } else {
-            throw new RuntimeException("Club with ID " + id + " not found");
+            return "Club not found.";
         }
     }
 
+   
+    public String deleteClub(int id) {
+        if (clubRepo.existsById(id)) {
+            clubRepo.deleteById(id);
+            return "Club deleted successfully.";
+        } else {
+            return "Club not found.";
+        }
+    }
 }

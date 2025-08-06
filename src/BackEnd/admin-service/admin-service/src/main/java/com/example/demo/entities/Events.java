@@ -1,8 +1,11 @@
 package com.example.demo.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.util.Base64;
 
 @Entity
 @Table(name = "events")
@@ -13,38 +16,38 @@ public class Events {
     @Column(name = "e_id")
     private int eid;
 
-    private String description;
-
     @ManyToOne
-    @JoinColumn(name = "c_id")
+    @JoinColumn(name = "c_id", nullable = false)
     @JsonBackReference
     private Club club;
 
-    // Default constructor
+    @Column(nullable = false)
+    private String description;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB", nullable = false)
+    @JsonIgnore
+    private byte[] banner;
+
+    @Column(nullable = false)
+    private boolean status = false;
+
     public Events() {}
 
-    // Parameterized constructor
-    public Events(int eid, String description, Club club) {
+    public Events(int eid, Club club, String description, byte[] banner, boolean status) {
         this.eid = eid;
-        this.description = description;
         this.club = club;
+        this.description = description;
+        this.banner = banner;
+        this.status = status;
     }
 
-    // Getters and setters
     public int getEid() {
         return eid;
     }
 
     public void setEid(int eid) {
         this.eid = eid;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Club getClub() {
@@ -55,8 +58,44 @@ public class Events {
         this.club = club;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public byte[] getBanner() {
+        return banner;
+    }
+
+    public void setBanner(byte[] banner) {
+        this.banner = banner;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+   
+    @JsonProperty("banner")
+    public String getBannerBase64() {
+        if (banner != null && banner.length > 0) {
+            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(banner);
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
-        return "Events [eid=" + eid + ", description=" + description + "]";
+        return "Events [eid=" + eid +
+               ", club=" + (club != null ? club.getCid() : null) +
+               ", description=" + description +
+               ", status=" + status + "]";
     }
 }

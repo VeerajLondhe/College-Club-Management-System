@@ -1,0 +1,82 @@
+package com.example.demo.entities;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "events")
+public class Events {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "e_id")
+    private int eid;
+
+    private String description;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] banner;
+
+    private boolean status = false;
+
+    @ManyToOne
+    @JoinColumn(name = "c_id")
+    @JsonBackReference
+    private Club club;
+
+    public Events() {}
+
+    public Events(int eid, String description, byte[] banner, boolean status, Club club) {
+        this.eid = eid;
+        this.description = description;
+        this.banner = banner;
+        this.status = status;
+        this.club = club;
+    }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public byte[] getBanner() {
+        return banner;
+    }
+
+    public void setBanner(byte[] banner) {
+        this.banner = banner;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public Club getClub() {
+        return club;
+    }
+
+    public void setClub(Club club) {
+        this.club = club;
+    }
+
+    @Override
+    public String toString() {
+        return "Events [eid=" + eid + ", description=" + description + ", status=" + status + "]";
+    }
+}
