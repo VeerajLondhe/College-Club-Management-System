@@ -9,31 +9,32 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/events")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class EventsController {
 
     @Autowired
     private EventsService eventsService;
 
-    // Get all approved events of an active club
+    
     @GetMapping("/club/{clubId}")
     public List<Events> getActiveEventsByClub(@PathVariable int clubId) {
         return eventsService.getApprovedEventsByClubId(clubId);
     }
 
-    // Get all unapproved events (admin)
+    
     @GetMapping("/pending")
     public List<Events> getAllPendingEvents() {
         return eventsService.getAllPendingEvents();
     }
 
-    // Approve event by ID (admin)
+    
     @PutMapping("/approve/{eventId}")
     public String approveEvent(@PathVariable int eventId) {
         boolean approved = eventsService.approveEvent(eventId);
         return approved ? "Event approved successfully" : "Event not found";
     }
 
+   
     @DeleteMapping("/delete/{eventId}")
     public String deleteEvent(@PathVariable int eventId) {
         boolean deleted = eventsService.deleteEvent(eventId);
