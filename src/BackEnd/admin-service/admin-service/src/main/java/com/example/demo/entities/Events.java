@@ -1,8 +1,10 @@
 package com.example.demo.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.Base64;
 
 @Entity
 @Table(name = "events")
@@ -15,22 +17,29 @@ public class Events {
 
     private String description;
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    @JsonIgnore  // Hide raw byte[] in JSON
+    private byte[] banner;
+
+    private boolean status = false;
+
     @ManyToOne
     @JoinColumn(name = "c_id")
     @JsonBackReference
     private Club club;
 
-    // Default constructor
-    public Events() {}
+    public Events() {
+    }
 
-    // Parameterized constructor
-    public Events(int eid, String description, Club club) {
+    public Events(int eid, String description, byte[] banner, boolean status, Club club) {
         this.eid = eid;
         this.description = description;
+        this.banner = banner;
+        this.status = status;
         this.club = club;
     }
 
-    // Getters and setters
     public int getEid() {
         return eid;
     }
@@ -47,6 +56,24 @@ public class Events {
         this.description = description;
     }
 
+    // Prevent byte[] from being exposed in JSON
+    @JsonIgnore
+    public byte[] getBanner() {
+        return banner;
+    }
+
+    public void setBanner(byte[] banner) {
+        this.banner = banner;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     public Club getClub() {
         return club;
     }
@@ -55,8 +82,17 @@ public class Events {
         this.club = club;
     }
 
+    // This will be included in JSON response
+    public String getBannerBase64() {
+        if (banner != null && banner.length > 0) {
+            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(banner);
+        } else {
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
-        return "Events [eid=" + eid + ", description=" + description + "]";
+        return "Events [eid=" + eid + ", description=" + description + ", status=" + status + "]";
     }
 }
