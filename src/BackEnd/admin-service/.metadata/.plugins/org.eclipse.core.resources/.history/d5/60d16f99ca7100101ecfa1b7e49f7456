@@ -1,0 +1,43 @@
+package com.example.demo.services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.entities.Events;
+import com.example.demo.repositories.EventsRepository;
+
+@Service
+public class EventsService {
+
+    @Autowired
+    private EventsRepository eventsRepo;
+
+    public List<Events> getApprovedEventsByClubId(int clubId) {
+        return eventsRepo.findActiveEventsByClubId(clubId);
+    }
+
+    public List<Events> getPendingEvents() {
+        return eventsRepo.findByStatusFalse();  // Custom query
+    }
+
+    public String approveEvent(int id) {
+        Events event = eventsRepo.findById(id).orElse(null);
+        if (event != null) {
+            event.setStatus(true);
+            eventsRepo.save(event);
+            return "Event approved successfully.";
+        }
+        return "Event not found.";
+    }
+
+    public String deleteEvent(int id) {
+        if (eventsRepo.existsById(id)) {
+            eventsRepo.deleteById(id);
+            return "Event rejected and deleted.";
+        }
+        return "Event not found.";
+    }
+
+}

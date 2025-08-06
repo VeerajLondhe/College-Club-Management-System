@@ -24,7 +24,8 @@ public class Club {
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<Events> events;
+   
+    private List<Events> events ;
 
     // Default constructor
     public Club() {}
