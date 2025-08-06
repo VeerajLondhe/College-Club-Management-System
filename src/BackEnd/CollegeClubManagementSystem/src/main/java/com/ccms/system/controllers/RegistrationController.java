@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ccms.system.dto.UserLog;
+import com.ccms.system.dto.UserWithPosition;
 import com.ccms.system.entities.User;
 import com.ccms.system.services.UserService;
 
@@ -45,11 +46,10 @@ public class RegistrationController {
 	}
 	
 	@PostMapping("/login")
-	public User login(@RequestBody UserLog user) {
+	public ResponseEntity<UserWithPosition> login(@RequestBody UserLog user) {
 		String username=user.getUsername();
 		String password=user.getPassword();
-	    return uservice.login(username, password)
-	            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+	    return uservice.login(username, password);
 	}
 	
 }
