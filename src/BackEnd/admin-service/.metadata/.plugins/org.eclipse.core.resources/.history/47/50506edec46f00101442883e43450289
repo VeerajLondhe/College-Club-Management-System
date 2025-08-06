@@ -1,0 +1,9 @@
+package com.example.demo.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.entities.Events;
+import java.util.List;
+
+public interface EventsRepository extends JpaRepository<Events, Integer> {
+    List<Events> findByClubCid(int cid);  
+}

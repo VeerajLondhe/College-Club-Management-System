@@ -1,0 +1,44 @@
+package com.example.demo.services;
+
+import com.example.demo.entities.Club;
+import com.example.demo.repositories.ClubRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ClubService {
+
+    @Autowired
+    private ClubRepository clubRepo;
+
+    // Return only basic info (no events)
+    public List<Club> getActiveClubsBasicInfo() {
+        List<Object[]> rows = clubRepo.findBasicActiveClubs();
+        List<Club> clubs = new ArrayList<>();
+
+        for (Object[] obj : rows) {
+            Integer cid = (Integer) obj[0];
+            String cname = (String) obj[1];
+            String description = (String) obj[2];
+            Boolean status = (Boolean) obj[3];
+            java.sql.Timestamp timestamp = (java.sql.Timestamp) obj[4];
+
+            Club club = new Club(cid, cname, description, status, timestamp, null, null);
+            clubs.add(club);
+        }
+
+        return clubs;
+    }
+
+    }
+
+
+    // Return full club with events
+    public Club getClubById(int id) {
+        return clubRepo.findById(id).orElse(null);
+    }
+}

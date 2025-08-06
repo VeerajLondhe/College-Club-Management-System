@@ -1,0 +1,28 @@
+package com.example.demo.controllers;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import com.example.demo.entities.Events;
+import com.example.demo.services.EventsService;
+
+@RestController
+@RequestMapping("/events")
+@CrossOrigin(origins = "http://localhost:3000")
+public class EventsController {
+
+    @Autowired
+    private EventsService eventsService;
+
+    @GetMapping("/active")
+    public List<Events> getEventsOfActiveClubs() {
+        return eventsService.getAllEventsOfActiveClubs();
+    }
+
+    @GetMapping("/club/{clubId}")
+    public List<Events> getEventsByClub(@PathVariable int clubId) {
+        return eventsService.getEventsByClubId(clubId);
+    }
+}

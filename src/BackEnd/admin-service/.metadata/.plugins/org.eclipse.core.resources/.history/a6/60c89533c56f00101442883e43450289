@@ -1,0 +1,17 @@
+package com.example.demo.repositories;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.example.demo.entities.Club;
+
+public interface ClubRepository extends JpaRepository<Club, Integer> {
+
+    @Query("SELECT c FROM Club c WHERE c.status = true")
+    List<Club> findActiveClubs();
+
+    @Query("SELECT c FROM Club c WHERE c.status = false")
+    List<Club> findInactiveClubs();
+}
