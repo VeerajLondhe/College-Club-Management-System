@@ -1,0 +1,9 @@
+@Student_Service__HostAddress = https://localhost:7173
+
+GET {{Student_Service__HostAddress}}/weatherforecast/
+Accept: application/json
+
+
+GET {{Student_Service__HostAddress}}/weatherforecast/
+Accept: application/json
+

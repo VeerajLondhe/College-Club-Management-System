@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/admin/clubs")
-@CrossOrigin(origins = "*")
+@RequestMapping("/clubs")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClubController {
 
     @Autowired
