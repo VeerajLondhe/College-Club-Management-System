@@ -13,4 +13,6 @@ public interface ClubMemberRepository extends JpaRepository<ClubMember, Integer>
 	
 	@Query("SELECT cm.position FROM ClubMember cm WHERE cm.userID = :uid")
 	String getPositon(@Param("uid") int uid);
+  
 }
+

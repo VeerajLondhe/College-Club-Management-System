@@ -101,5 +101,5 @@ public class UserWithPosition {
 				+ ", role=" + role + ", dname=" + dname + ", pos=" + pos + "]";
 	}
 
-	
 }
+

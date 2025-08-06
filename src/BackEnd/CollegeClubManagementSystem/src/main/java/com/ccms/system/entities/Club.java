@@ -99,7 +99,5 @@ public class Club {
 		return "Club [clubId=" + clubId + ", clubname=" + clubname + ", description=" + description + ", creationdate="
 				+ creationdate + ", status=" + status + ", userId=" + userId + "]";
 	}
-	
-	
 
 }
