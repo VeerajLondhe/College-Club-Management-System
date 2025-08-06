@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Club;
+import com.example.demo.entities.User;
 import com.example.demo.repositories.ClubRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,10 @@ public class ClubService {
             Integer cid = (Integer) obj[0];
             String cname = (String) obj[1];
             String description = (String) obj[2];
-            Boolean status = (Boolean) obj[3];
-            java.sql.Timestamp timestamp = (java.sql.Timestamp) obj[4];
-
-            Club club = new Club(cid, cname, description, status, timestamp, null, null);
+            java.sql.Timestamp timestamp = (java.sql.Timestamp) obj[3];
+            Boolean status = (Boolean) obj[4];
+            User userId=(User)obj[5];
+            Club club = new Club(cid, cname, description, timestamp, status,userId,null);
             clubs.add(club);
         }
 

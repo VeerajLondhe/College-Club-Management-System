@@ -13,7 +13,7 @@ public interface ClubRepository extends CrudRepository<Club, Integer> {
     @Query("SELECT c FROM Club c WHERE c.status = true")
     List<Club> findActiveClubs();
 
-    @Query("SELECT c.cid, c.cname, c.description, c.status, c.date FROM Club c WHERE c.status = true")
+    @Query("SELECT c.cid, c.cname, c.description, c.creationdate, c.status, c.userId FROM Club c WHERE c.status = true")
     List<Object[]> findBasicActiveClubs();
     
     List<Club> findByStatus(boolean status);
