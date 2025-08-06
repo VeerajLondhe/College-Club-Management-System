@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/clubs")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClubController {
 
     @Autowired
