@@ -1,10 +1,11 @@
 package com.example.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "club")
@@ -15,32 +16,39 @@ public class Club {
     @Column(name = "c_id")
     private int cid;
 
-    @Column(name = "c_name")
+    @Column(name = "c_name", nullable = false)
     private String cname;
 
+    @Column(nullable = false)
     private String description;
-    private boolean status;
+
+    @Column(name = "date", nullable = false)
     private Date date;
+
+    @Column(nullable = false)
+    private boolean status = false;
+
+    @ManyToOne
+    @JoinColumn(name = "u_id", nullable = false)
+    @JsonIgnoreProperties({"clubs", "password", "role"})
+    private User user;
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-   
-    private List<Events> events ;
+    private List<Events> events;
 
-    // Default constructor
     public Club() {}
 
-    // Parameterized constructor
-    public Club(int cid, String cname, String description, boolean status, Date date, List<User> users, List<Events> events) {
+    public Club(int cid, String cname, String description, Date date, boolean status, User user, List<Events> events) {
         this.cid = cid;
         this.cname = cname;
         this.description = description;
-        this.status = status;
         this.date = date;
+        this.status = status;
+        this.user = user;
         this.events = events;
     }
 
-    // Getters and setters
     public int getCid() {
         return cid;
     }
@@ -65,14 +73,6 @@ public class Club {
         this.description = description;
     }
 
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -81,7 +81,21 @@ public class Club {
         this.date = date;
     }
 
-   
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public List<Events> getEvents() {
         return events;
@@ -94,6 +108,8 @@ public class Club {
     @Override
     public String toString() {
         return "Club [cid=" + cid + ", cname=" + cname + ", description=" + description +
-               ", status=" + status + ", date=" + date + "]";
+                ", date=" + date + ", status=" + status +
+                ", user=" + (user != null ? user.getUid() : null) +
+                ", eventsCount=" + (events != null ? events.size() : 0) + "]";
     }
 }

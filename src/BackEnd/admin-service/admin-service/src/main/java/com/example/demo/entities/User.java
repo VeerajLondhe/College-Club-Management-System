@@ -1,6 +1,8 @@
 package com.example.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -11,27 +13,32 @@ public class User {
     @Column(name = "u_id")
     private int uid;
 
+    @Column(nullable = false)
     private String uname;
+
+    @Column(nullable = false, unique = true)
     private String email;
-    private String phoneno;
+
+    @JsonIgnore
+    @Column(nullable = false)
     private String password;
-    private String dname;
 
-    @ManyToOne
-    @JoinColumn(name = "r_id")
-    private Role role;
+    @Column(nullable = false)
+    private String role;
 
-    public User() {
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Club> clubs;
 
-    public User(int uid, String uname, String email, String phoneno, String password, String dname, Role role) {
+    public User() {}
+
+    public User(int uid, String uname, String email, String password, String role, List<Club> clubs) {
         this.uid = uid;
         this.uname = uname;
         this.email = email;
-        this.phoneno = phoneno;
         this.password = password;
-        this.dname = dname;
         this.role = role;
+        this.clubs = clubs;
     }
 
     public int getUid() {
@@ -58,14 +65,6 @@ public class User {
         this.email = email;
     }
 
-    public String getPhoneno() {
-        return phoneno;
-    }
-
-    public void setPhoneno(String phoneno) {
-        this.phoneno = phoneno;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -74,25 +73,24 @@ public class User {
         this.password = password;
     }
 
-    public String getDname() {
-        return dname;
-    }
-
-    public void setDname(String dname) {
-        this.dname = dname;
-    }
-
-    public Role getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<Club> getClubs() {
+        return clubs;
+    }
+
+    public void setClubs(List<Club> clubs) {
+        this.clubs = clubs;
     }
 
     @Override
     public String toString() {
-        return "User [uid=" + uid + ", uname=" + uname + ", email=" + email + ", phoneno=" + phoneno +
-               ", password=" + password + ", dname=" + dname + ", role=" + role + "]";
+        return "User [uid=" + uid + ", uname=" + uname + ", email=" + email + ", role=" + role + "]";
     }
 }
