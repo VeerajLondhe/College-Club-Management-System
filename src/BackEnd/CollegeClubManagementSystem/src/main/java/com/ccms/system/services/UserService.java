@@ -7,9 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.ccms.system.CollegeClubManagementSystemApplication;
+import com.ccms.system.config.AuthUtil;
+import com.ccms.system.dto.UserResponseDTO;
 import com.ccms.system.dto.UserWithPosition;
 import com.ccms.system.entities.ClubMember;
 import com.ccms.system.entities.Role;
@@ -27,7 +34,16 @@ public class UserService {
 	UserRepository urepo;
 	
 	@Autowired
-	ClubMemberRepository crepo;
+	AuthenticationManager authenticationManager;
+	
+	@Autowired
+	AuthUtil authUtil;
+	
+	@Autowired
+	PasswordEncoder passworEncder;
+	
+	@Autowired
+	ClubMemberRepository cmrepo;
 	
 	@Autowired
 	RoleRepository rrepo;
@@ -45,14 +61,28 @@ public class UserService {
 //		return urepo.save(u);
 //	}
 	
-	public ResponseEntity<User> insertData(User u) {
+	public ResponseEntity<?> insertData(User savedUser) {
 		try {
-		int roleId=u.getRole().getRid();
+		
+		int roleId=savedUser.getRole().getRid();
 		Role role=rrepo.findById(roleId).get();
-		u.setRole(role);
-		urepo.save(u);
-		return new ResponseEntity<>(u,HttpStatus.CREATED);
+		savedUser.setRole(role);
+		String pass=savedUser.getPassword();
+		savedUser.setPassword(passworEncder.encode(pass));	
+		urepo.save(savedUser);
+		
+		UserResponseDTO responseDto = new UserResponseDTO();
+
+       
+        responseDto.setUid(savedUser.getUid());
+        responseDto.setUname(savedUser.getUname());
+        responseDto.setEmail(savedUser.getEmail());
+        responseDto.setPhoneno(savedUser.getPhoneno());
+        responseDto.setDname(savedUser.getDname());
+        responseDto.setRole(savedUser.getRole());
+		return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
 		}catch(Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -71,21 +101,39 @@ public class UserService {
 		return urepo.findAll();
 	}
 	
-	 public ResponseEntity<UserWithPosition> login(String username, String password) {
-		 	Optional<User> user=urepo.loginNative(username, password);
-		 	if(user.isPresent()) {
-		 		UserWithPosition uw=new UserWithPosition();
-		 		uw.setUid(user.get().getUid());
-		 		uw.setUname(user.get().getUname());
-		 		uw.setEmail(user.get().getEmail());
-		 		uw.setPhoneno(user.get().getPhoneno());
-		 		uw.setRole(user.get().getRole());
-		 		uw.setDname(user.get().getDname());
-		 		uw.setPos(crepo.getPositon(user.get().getUid()));
-		 		return new ResponseEntity<>(uw,HttpStatus.OK);
-			  }
-		 	
-		 	return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-     }
 
+	public ResponseEntity<UserWithPosition> login(String username, String password) {
+	    try {
+	       
+	        Authentication authentication = authenticationManager.authenticate(
+	                new UsernamePasswordAuthenticationToken(username, password)
+	        );
+
+	        
+	        
+	        com.ccms.system.entities.User user = urepo.findByEmail(authentication.getName())
+	                .orElseThrow(() -> new RuntimeException("Authenticated user not found in database. This should not happen."));
+
+	        
+	        String token = authUtil.generateAccessToken(user);
+	        
+	        String pos=cmrepo.getPositon(user.getUid());
+	        
+	        
+	        UserWithPosition uw = new UserWithPosition();
+	        uw.setUid(user.getUid());
+	        uw.setUname(user.getUname());
+	        uw.setEmail(user.getEmail());
+	        uw.setPhoneno(user.getPhoneno());
+	        uw.setRole(user.getRole());
+	        uw.setDname(user.getDname());
+	        uw.setPos(pos);
+	        uw.setJWT(token);
+	        
+	        return new ResponseEntity<>(uw, HttpStatus.OK);
+
+	    } catch (BadCredentialsException e) {
+	        return new ResponseEntity("Invalid username or password", HttpStatus.UNAUTHORIZED);
+	    }
+	}
 }

@@ -18,4 +18,9 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 	Optional<User> loginNative(@Param("username") String username, @Param("password") String password);
 	
 	
+	
+    Optional<User> findByUname(String uname);
+
+    
+    Optional<User> findByEmail(String email);
 }
