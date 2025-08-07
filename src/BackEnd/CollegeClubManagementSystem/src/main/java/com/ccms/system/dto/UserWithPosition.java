@@ -16,19 +16,22 @@ public class UserWithPosition {
 	
 	private String phoneno;
 	
-	
+
 	private Role role;	
 
 	private String dname;
 	
 	private String pos;
+	
+	private String JWT;
 
 	public UserWithPosition() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public UserWithPosition(int uid, String uname, String email, String phoneno, Role role, String dname, String pos) {
+	public UserWithPosition(int uid, String uname, String email, String phoneno, Role role, String dname, String pos,
+			String jWT) {
 		super();
 		this.uid = uid;
 		this.uname = uname;
@@ -37,6 +40,7 @@ public class UserWithPosition {
 		this.role = role;
 		this.dname = dname;
 		this.pos = pos;
+		JWT = jWT;
 	}
 
 	public int getUid() {
@@ -95,11 +99,18 @@ public class UserWithPosition {
 		this.pos = pos;
 	}
 
+	public String getJWT() {
+		return JWT;
+	}
+
+	public void setJWT(String jWT) {
+		JWT = jWT;
+	}
+
 	@Override
 	public String toString() {
 		return "UserWithPosition [uid=" + uid + ", uname=" + uname + ", email=" + email + ", phoneno=" + phoneno
-				+ ", role=" + role + ", dname=" + dname + ", pos=" + pos + "]";
+				+ ", role=" + role + ", dname=" + dname + ", pos=" + pos + ", JWT=" + JWT + "]";
 	}
 
-	
 }

@@ -1,5 +1,10 @@
 package com.ccms.system.entities;
 
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +16,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="user")
-public class User {
+public class User implements UserDetails {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -110,6 +115,18 @@ public class User {
 	public String toString() {
 		return "User [uid=" + uid + ", uname=" + uname + ", email=" + email + ", phoneno=" + phoneno + ", role=" + role
 				+ ", password=" + password + ", dname=" + dname + "]";
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	
