@@ -4,6 +4,7 @@ GET {{Student_Service__HostAddress}}/weatherforecast/
 Accept: application/json
 
 
-GET {{Student_Service__HostAddress}}/weatherforecast/
+GET {{Student_Service__Hosd
+tAddress}}/weatherforecast/
 Accept: application/json
 

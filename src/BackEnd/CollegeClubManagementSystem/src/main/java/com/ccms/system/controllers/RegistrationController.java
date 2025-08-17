@@ -1,6 +1,7 @@
 package com.ccms.system.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+
 import com.ccms.system.dto.UserLog;
 import com.ccms.system.dto.UserWithPosition;
 import com.ccms.system.entities.User;
@@ -28,6 +30,7 @@ public class RegistrationController {
 	
 	@Autowired
 	UserService uservice;
+	
 	
 	
 	@PostMapping("/register")
@@ -51,5 +54,31 @@ public class RegistrationController {
 		String password=user.getPassword();
 	    return uservice.login(username, password);
 	}
-	
+
+	@PostMapping("/forgot-password")
+	public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+		String email = request.get("email");
+		// TODO: Implement forgot password logic
+		return ResponseEntity.ok(Map.of("message", "Password reset email sent"));
+	}
+
+	@PostMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+		String token = request.get("token");
+		String newPassword = request.get("newPassword");
+
+		return ResponseEntity.ok(Map.of("message", "Password reset successful"));
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<User> getCurrentUser(@RequestParam("id") int id) {
+		return uservice.getUserById(id);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout() {
+
+		return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+	}
+
 }

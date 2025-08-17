@@ -13,18 +13,25 @@ public class User {
     @Column(name = "u_id")
     private int uid;
 
-    @Column(nullable = false)
+    @Column(name = "uname")
     private String uname;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "d_name")
+    private String dname;
+
+    @Column(name = "email", unique = true)
     private String email;
 
     @JsonIgnore
-    @Column(nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(nullable = false)
-    private String role;
+    @Column(name = "phoneno")
+    private String phoneno;
+
+    @ManyToOne
+    @JoinColumn(name="r_id")
+    private Role role;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -32,11 +39,13 @@ public class User {
 
     public User() {}
 
-    public User(int uid, String uname, String email, String password, String role, List<Club> clubs) {
+    public User(int uid, String uname, String dname, String email, String password, String phoneno, Role role, List<Club> clubs) {
         this.uid = uid;
         this.uname = uname;
+        this.dname = dname;
         this.email = email;
         this.password = password;
+        this.phoneno = phoneno;
         this.role = role;
         this.clubs = clubs;
     }
@@ -57,6 +66,14 @@ public class User {
         this.uname = uname;
     }
 
+    public String getDname() {
+        return dname;
+    }
+
+    public void setDname(String dname) {
+        this.dname = dname;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -73,11 +90,19 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public String getPhoneno() {
+        return phoneno;
+    }
+
+    public void setPhoneno(String phoneno) {
+        this.phoneno = phoneno;
+    }
+
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

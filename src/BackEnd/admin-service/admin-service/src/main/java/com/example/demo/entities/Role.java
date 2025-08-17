@@ -11,6 +11,7 @@ public class Role {
     @Column(name = "r_id")
     private int rid;
 
+    @Column(name="r_name")
     private String rname;
 
     public Role() {

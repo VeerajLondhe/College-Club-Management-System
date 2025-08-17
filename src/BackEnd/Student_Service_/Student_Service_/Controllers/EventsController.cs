@@ -147,6 +147,123 @@ namespace Student_Service_.Controllers
             return StatusCode(201, "Task successfully assigned.");
         }
 
+        // New endpoints for student event management
+        [HttpGet("my-club/all/{headUserId}")]
+        public async Task<ActionResult<IEnumerable<EventDto>>> GetMyClubAllEvents(int headUserId)
+        {
+            // Get all events (both approved and pending) for the club head's club
+            var allEvents = await _context.Events
+                .Where(e => e.CIdNavigation.UId == headUserId && e.CIdNavigation.Status == true)
+                .Select(e => new EventDto
+                {
+                    EventId = e.EId,
+                    Description = e.Description,
+                    ClubName = e.CIdNavigation.Clubname,
+                    Status = e.Status, // Include status to show approved/pending
+                    BannerBase64 = e.Banner != null ? $"data:image/jpeg;base64,{Convert.ToBase64String(e.Banner)}" : null
+                })
+                .ToListAsync();
+
+            return Ok(allEvents);
+        }
+
+        [HttpGet("user/{userId}/registered")]
+        public async Task<ActionResult<IEnumerable<EventRegistrationResponseDto>>> GetUserRegisteredEvents(int userId)
+        {
+            // Get events this user has registered for
+            var registeredEvents = await _context.EventRegistrations
+                .Where(er => er.UId == userId && er.IsActive == true)
+                .Include(er => er.EIdNavigation)
+                .ThenInclude(e => e.CIdNavigation)
+                .Where(er => er.EIdNavigation.Status == true) // Only approved events
+                .Select(er => new EventRegistrationResponseDto
+                {
+                    EventId = er.EIdNavigation.EId,
+                    EventDescription = er.EIdNavigation.Description,
+                    ClubName = er.EIdNavigation.CIdNavigation.Clubname,
+                    RegistrationDate = er.RegistrationDate ?? DateTime.Now,
+                    IsActive = er.IsActive,
+                    BannerBase64 = er.EIdNavigation.Banner != null ? 
+                        $"data:image/jpeg;base64,{Convert.ToBase64String(er.EIdNavigation.Banner)}" : null
+                })
+                .ToListAsync();
+
+            return Ok(registeredEvents);
+        }
+
+        [HttpPost("{eventId}/register")]
+        public async Task<IActionResult> RegisterForEvent(int eventId, [FromBody] EventRegistrationDto registrationDto)
+        {
+            // Check if event exists and is approved
+            var eventEntity = await _context.Events
+                .Include(e => e.CIdNavigation)
+                .FirstOrDefaultAsync(e => e.EId == eventId && e.Status == true);
+            
+            if (eventEntity == null)
+            {
+                return NotFound("Event not found or not approved.");
+            }
+
+            // Check if user exists
+            var userExists = await _context.Users.AnyAsync(u => u.UId == registrationDto.UserId);
+            if (!userExists)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Check if user is already registered for this event
+            var alreadyRegistered = await _context.EventRegistrations
+                .AnyAsync(er => er.EId == eventId && er.UId == registrationDto.UserId && er.IsActive == true);
+
+            if (alreadyRegistered)
+            {
+                return BadRequest("User is already registered for this event.");
+            }
+
+            // Create registration entry
+            var registration = new EventRegistration
+            {
+                EId = eventId,
+                UId = registrationDto.UserId,
+                RegistrationDate = DateTime.Now,
+                IsActive = true
+            };
+
+            _context.EventRegistrations.Add(registration);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(201, "Successfully registered for the event.");
+        }
+
+        [HttpDelete("{eventId}/unregister/{userId}")]
+        public async Task<IActionResult> UnregisterFromEvent(int eventId, int userId)
+        {
+            // Find the registration
+            var registration = await _context.EventRegistrations
+                .FirstOrDefaultAsync(er => er.EId == eventId && er.UId == userId && er.IsActive == true);
+
+            if (registration == null)
+            {
+                return NotFound("Registration not found.");
+            }
+
+            // Soft delete by setting IsActive to false
+            registration.IsActive = false;
+            await _context.SaveChangesAsync();
+
+            return Ok("Successfully unregistered from the event.");
+        }
+
+        // Additional endpoint to check if user is registered for an event
+        [HttpGet("{eventId}/is-registered/{userId}")]
+        public async Task<IActionResult> IsUserRegisteredForEvent(int eventId, int userId)
+        {
+            var isRegistered = await _context.EventRegistrations
+                .AnyAsync(er => er.EId == eventId && er.UId == userId && er.IsActive == true);
+
+            return Ok(new { isRegistered = isRegistered });
+        }
+
 
     }
 }

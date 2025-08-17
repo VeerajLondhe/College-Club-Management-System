@@ -72,7 +72,56 @@ namespace Student_Service_.Controllers
 
             return Ok(availableClubs);
         }
+        // DELETE: api/ClubMembership/leave
+        [HttpDelete("leave")]
+        public async Task<IActionResult> LeaveClub([FromBody] LeaveClubDto leaveDto)
+        {
+            // 1. Find the specific membership record for the user in the specified club.
+            var membership = await _context.ClubMembers
+                .Include(cm => cm.CIdNavigation) // Include the Club to check who the head is
+                .FirstOrDefaultAsync(cm => cm.UId == leaveDto.UserId && cm.CId == leaveDto.ClubId);
 
-        
+            if (membership == null)
+            {
+                return NotFound("You are not a member of this club.");
+            }
+
+            // 2. Business Rule: Prevent the club head from leaving their own club.
+            // They would need to delete the club or transfer ownership instead.
+            if (membership.CIdNavigation?.UId == leaveDto.UserId)
+            {
+                return BadRequest("As the club head, you cannot leave your own club. Please delete the club or transfer ownership.");
+            }
+
+            // 3. Remove the membership record from the database.
+            _context.ClubMembers.Remove(membership);
+            await _context.SaveChangesAsync();
+
+            return Ok("You have successfully left the club.");
+        }
+
+        // New endpoint to check if user is a member of a specific club
+        [HttpGet("{clubId}/is-member/{userId}")]
+        public async Task<IActionResult> IsUserMemberOfClub(int clubId, int userId)
+        {
+            var isMember = await _context.ClubMembers
+                .AnyAsync(cm => cm.CId == clubId && cm.UId == userId && cm.ReqStatus == true);
+
+            return Ok(new { isMember = isMember });
+        }
+
+        // Get user's membership status for all clubs (for checking join/leave buttons)
+        [HttpGet("user/{userId}/memberships")]
+        public async Task<IActionResult> GetUserClubMemberships(int userId)
+        {
+            var memberships = await _context.ClubMembers
+                .Where(cm => cm.UId == userId && cm.ReqStatus == true)
+                .Select(cm => new { clubId = cm.CId, position = cm.Position })
+                .ToListAsync();
+
+            return Ok(memberships);
+        }
+
+
     }
 }

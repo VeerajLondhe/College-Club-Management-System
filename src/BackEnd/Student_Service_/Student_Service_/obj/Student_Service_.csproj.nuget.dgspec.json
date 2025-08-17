@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MAYUR\\Desktop\\C_DAC_Final_Project\\CCMS\\College-Club-Management-System\\src\\BackEnd\\Student_Service_\\Student_Service_\\Student_Service_.csproj": {}
+    "C:\\Viraj\\CDAC\\college-club-management\\backend\\Student_Service_\\Student_Service_\\Student_Service_.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MAYUR\\Desktop\\C_DAC_Final_Project\\CCMS\\College-Club-Management-System\\src\\BackEnd\\Student_Service_\\Student_Service_\\Student_Service_.csproj": {
+    "C:\\Viraj\\CDAC\\college-club-management\\backend\\Student_Service_\\Student_Service_\\Student_Service_.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MAYUR\\Desktop\\C_DAC_Final_Project\\CCMS\\College-Club-Management-System\\src\\BackEnd\\Student_Service_\\Student_Service_\\Student_Service_.csproj",
+        "projectUniqueName": "C:\\Viraj\\CDAC\\college-club-management\\backend\\Student_Service_\\Student_Service_\\Student_Service_.csproj",
         "projectName": "Student_Service_",
-        "projectPath": "C:\\Users\\MAYUR\\Desktop\\C_DAC_Final_Project\\CCMS\\College-Club-Management-System\\src\\BackEnd\\Student_Service_\\Student_Service_\\Student_Service_.csproj",
-        "packagesPath": "C:\\Users\\MAYUR\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MAYUR\\Desktop\\C_DAC_Final_Project\\CCMS\\College-Club-Management-System\\src\\BackEnd\\Student_Service_\\Student_Service_\\obj\\",
+        "projectPath": "C:\\Viraj\\CDAC\\college-club-management\\backend\\Student_Service_\\Student_Service_\\Student_Service_.csproj",
+        "packagesPath": "C:\\Users\\viraj\\.nuget\\packages\\",
+        "outputPath": "C:\\Viraj\\CDAC\\college-club-management\\backend\\Student_Service_\\Student_Service_\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MAYUR\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\viraj\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -72,6 +72,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.13.1, )"
             }
           },
           "imports": [

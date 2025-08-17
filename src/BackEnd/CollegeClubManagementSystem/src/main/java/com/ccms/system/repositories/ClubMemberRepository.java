@@ -11,7 +11,7 @@ import com.ccms.system.entities.User;
 @Repository
 public interface ClubMemberRepository extends JpaRepository<ClubMember, Integer> {
 	
-	@Query("SELECT cm.position FROM ClubMember cm WHERE cm.userID = :uid")
+	@Query(value = "SELECT cm.position FROM club_member cm WHERE cm.u_id = :uid AND cm.req_status = true ORDER BY CASE WHEN cm.position = 'club_head' THEN 1 WHEN cm.position = 'club_member' THEN 2 ELSE 3 END LIMIT 1", nativeQuery = true)
 	String getPositon(@Param("uid") int uid);
   
 }

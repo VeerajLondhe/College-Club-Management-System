@@ -2,10 +2,12 @@ package com.example.demo.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.Base64;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -25,12 +27,18 @@ public class Events {
     private String description;
 
     @Lob
-    @Column(columnDefinition = "LONGBLOB", nullable = false)
+    @Column(columnDefinition = "LONGBLOB", nullable = true)
     @JsonIgnore
     private byte[] banner;
 
     @Column(nullable = false)
     private boolean status = false;
+
+    // EventTask relationship commented out temporarily to fix delete functionality
+    // Table name was incorrect - should be 'event_task' not 'events_task'
+    // @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @JsonManagedReference
+    // private List<EventTask> eventTasks;
 
     public Events() {}
 
@@ -81,6 +89,15 @@ public class Events {
     public void setStatus(boolean status) {
         this.status = status;
     }
+
+    // EventTask getters and setters commented out temporarily
+    // public List<EventTask> getEventTasks() {
+    //     return eventTasks;
+    // }
+
+    // public void setEventTasks(List<EventTask> eventTasks) {
+    //     this.eventTasks = eventTasks;
+    // }
 
    
     @JsonProperty("banner")

@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Student_Service_.DTO;
 using Student_Service_.Models;
 using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 namespace Student_Service_.Controllers
 {   //localhost:8080/api/Student
@@ -84,7 +88,7 @@ namespace Student_Service_.Controllers
             }
 
             var isClubHead = await _context.ClubMembers
-                .AnyAsync(cm => cm.UId == joinRequest.UId && cm.Position == "Club Head" && cm.ReqStatus == true);
+                .AnyAsync(cm => cm.UId == joinRequest.UId && cm.Position == "club_head" && cm.ReqStatus == true);
 
             if (isClubHead)
             {
@@ -103,7 +107,7 @@ namespace Student_Service_.Controllers
             {
                 UId = joinRequest.UId,
                 CId = joinRequest.CId,
-                Position = "Member",
+                Position = "club_member",
                 ReqStatus = false 
             };
 
@@ -168,7 +172,7 @@ namespace Student_Service_.Controllers
             return Ok("Join request approved successfully.");
         }
 
-        [HttpGet("/members/{headUserId}")]
+        [HttpGet("members/{headUserId}")]
         public async Task<ActionResult<IEnumerable<ClubMemberDto>>> GetClubMembers(int headUserId)
         {
             var ownedClub = await _context.Clubs
@@ -261,5 +265,109 @@ namespace Student_Service_.Controllers
         //    };
 
         //}
+
+        // Authentication endpoints
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            try
+            {
+                // Find user by email
+                var user = await _context.Users
+                    .Include(u => u.RIdNavigation)
+                    .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+
+                if (user == null)
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                // Check password (in a real app, you'd hash passwords)
+                if (user.Password != loginDto.Password)
+                {
+                    return Unauthorized(new { message = "Invalid email or password." });
+                }
+
+                // Determine user position/role
+                string position = "student"; // Default
+                string roleName = user.RIdNavigation?.RName ?? "student";
+
+                // Check if user is a club head
+                var isClubHead = await _context.ClubMembers
+                    .AnyAsync(cm => cm.UId == user.UId && cm.Position == "club_head" && cm.ReqStatus == true);
+
+                // Check if user is a club member (but not club head)
+                var isClubMember = await _context.ClubMembers
+                    .AnyAsync(cm => cm.UId == user.UId && cm.Position == "club_member" && cm.ReqStatus == true);
+
+                if (isClubHead)
+                {
+                    position = "club_head";
+                }
+                else if (isClubMember)
+                {
+                    position = "club_member";
+                }
+                else if (roleName.ToLower() == "admin")
+                {
+                    position = "admin";
+                }
+
+                // Generate a simple JWT token (you should use proper JWT configuration)
+                var token = GenerateJwtToken(user.UId, user.Email, position);
+
+                var response = new LoginResponseDto
+                {
+                    Uid = user.UId,
+                    Uname = user.Uname,
+                    Email = user.Email,
+                    Phoneno = user.Phoneno,
+                    Dname = user.DName,
+                    Role = roleName,
+                    Position = position,
+                    JWT = token
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
+        }
+
+        private string GenerateJwtToken(int userId, string email, string role)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("your-256-bit-secret-key-that-should-be-stored-securely"); // Should be in config
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim("userId", userId.ToString()),
+                    new Claim(ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Role, role)
+                }),
+                Expires = DateTime.UtcNow.AddHours(24),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            try
+            {
+                // This would normally get user from JWT token
+                // For now, we'll just return a placeholder
+                return Ok(new { message = "User profile endpoint" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+            }
+        }
     }
 }

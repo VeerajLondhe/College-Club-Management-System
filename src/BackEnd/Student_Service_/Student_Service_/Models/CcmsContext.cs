@@ -25,6 +25,8 @@ public partial class CcmsContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<EventRegistration> EventRegistrations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -191,6 +193,35 @@ public partial class CcmsContext : DbContext
             entity.HasOne(d => d.RIdNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RId)
                 .HasConstraintName("FK8lwi4plrarkg8sbkrphacf8it");
+        });
+
+        modelBuilder.Entity<EventRegistration>(entity =>
+        {
+            entity.HasKey(e => e.ErId).HasName("PRIMARY");
+
+            entity.ToTable("event_registration");
+
+            entity.HasIndex(e => e.UId, "u_id");
+            entity.HasIndex(e => e.EId, "e_id");
+            entity.HasIndex(e => new { e.UId, e.EId }, "unique_user_event").IsUnique();
+
+            entity.Property(e => e.ErId).HasColumnName("er_id");
+            entity.Property(e => e.UId).HasColumnName("u_id");
+            entity.Property(e => e.EId).HasColumnName("e_id");
+            entity.Property(e => e.RegistrationDate)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("registration_date");
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true)
+                .HasColumnName("is_active");
+
+            entity.HasOne(d => d.UIdNavigation).WithMany()
+                .HasForeignKey(d => d.UId)
+                .HasConstraintName("event_registration_ibfk_1");
+
+            entity.HasOne(d => d.EIdNavigation).WithMany()
+                .HasForeignKey(d => d.EId)
+                .HasConstraintName("event_registration_ibfk_2");
         });
 
         OnModelCreatingPartial(modelBuilder);
