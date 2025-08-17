@@ -7,6 +7,6 @@
         public string ClubName { get; set; }
         public bool Status { get; set; }
         public string? BannerBase64 { get; set; }
-        public string? TaskName { get; set; } // For task assignments
+        public string? TaskName { get; set; } 
     }
 }

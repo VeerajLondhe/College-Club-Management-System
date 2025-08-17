@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 
 namespace Student_Service_.Controllers
-{   //localhost:8080/api/Student
+{   
     [Route("api/[controller]")]
     [ApiController]
     public class StudentController : ControllerBase
@@ -30,7 +30,7 @@ namespace Student_Service_.Controllers
         }
 
 
-        //---------------------------------------------------------------------------------------------------
+       
         [HttpPost("request")]
         public async Task<IActionResult> RequestClubCreation(ClubCreationRequestDto requestDto)
         {
@@ -81,7 +81,7 @@ namespace Student_Service_.Controllers
                 return NotFound("User or Club not found.");
             }
 
-            //
+            
             if (club.Status == false)
             {
                 return BadRequest("This club is not currently active and cannot be joined.");
@@ -117,7 +117,7 @@ namespace Student_Service_.Controllers
             return StatusCode(201, "Your request to join the club has been sent and is pending approval.");
         }
 
-        //-----------------------------------------------------------------------------------------------------
+        //-------------------
         [HttpGet("requests/{headUserId}")]
         public async Task<ActionResult<IEnumerable<ClubJoinRequestViewDto>>> GetPendingJoinRequests(int headUserId)
         {
@@ -142,7 +142,7 @@ namespace Student_Service_.Controllers
         return Ok(pendingRequests);
     }
 
-        //------------------------------------------------------------------------------------------------------------
+        //------------------------------------
 
         [HttpPut("approve")]
         public async Task<IActionResult> ApproveJoinRequest([FromBody] ApproveJoinRequestDto approveDto)
@@ -252,90 +252,10 @@ namespace Student_Service_.Controllers
             return Ok(clubDto);
         }
 
-        //[HttpPost]
-        //public IActionResult sentRequest(ClubDto c)
-        //{
-        //    Club c1 = new Club()
-        //    {
-        //        Clubname = c.Clubname,
-        //        Description = c.Description,
-        //        Creationdate=c.Creationdate,
-        //        Status = c.Status,  
-        //        UId
-        //    };
+        
 
-        //}
-
-        // Authentication endpoints
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
-        {
-            try
-            {
-                // Find user by email
-                var user = await _context.Users
-                    .Include(u => u.RIdNavigation)
-                    .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
-
-                if (user == null)
-                {
-                    return Unauthorized(new { message = "Invalid email or password." });
-                }
-
-                // Check password (in a real app, you'd hash passwords)
-                if (user.Password != loginDto.Password)
-                {
-                    return Unauthorized(new { message = "Invalid email or password." });
-                }
-
-                // Determine user position/role
-                string position = "student"; // Default
-                string roleName = user.RIdNavigation?.RName ?? "student";
-
-                // Check if user is a club head
-                var isClubHead = await _context.ClubMembers
-                    .AnyAsync(cm => cm.UId == user.UId && cm.Position == "club_head" && cm.ReqStatus == true);
-
-                // Check if user is a club member (but not club head)
-                var isClubMember = await _context.ClubMembers
-                    .AnyAsync(cm => cm.UId == user.UId && cm.Position == "club_member" && cm.ReqStatus == true);
-
-                if (isClubHead)
-                {
-                    position = "club_head";
-                }
-                else if (isClubMember)
-                {
-                    position = "club_member";
-                }
-                else if (roleName.ToLower() == "admin")
-                {
-                    position = "admin";
-                }
-
-                // Generate a simple JWT token (you should use proper JWT configuration)
-                var token = GenerateJwtToken(user.UId, user.Email, position);
-
-                var response = new LoginResponseDto
-                {
-                    Uid = user.UId,
-                    Uname = user.Uname,
-                    Email = user.Email,
-                    Phoneno = user.Phoneno,
-                    Dname = user.DName,
-                    Role = roleName,
-                    Position = position,
-                    JWT = token
-                };
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
-            }
-        }
-
+      
+       
         private string GenerateJwtToken(int userId, string email, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -360,8 +280,6 @@ namespace Student_Service_.Controllers
         {
             try
             {
-                // This would normally get user from JWT token
-                // For now, we'll just return a placeholder
                 return Ok(new { message = "User profile endpoint" });
             }
             catch (Exception ex)
