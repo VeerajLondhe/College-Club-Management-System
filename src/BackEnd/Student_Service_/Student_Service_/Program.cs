@@ -14,49 +14,37 @@ namespace Student_Service_
             builder.Services.AddDbContext<CcmsContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins"; // Define a name for the policy
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins"; 
 
-            // --- Add services to the container ---
-
-            // 1. Add CORS Service and define a policy
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   policy =>
                                   {
-                                      // Add the origin of your React app
                                       policy.WithOrigins("http://localhost:3000")
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                                   });
             });
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
 
-            //var connectionString = builder.Configuration.GetConnectionString("server=localhost;port=3306;user=root;password=Mack@7507;database=ccms");
-
-            //// 2. ? REGISTER THE DBCONTEXT HERE
-            //// This tells the application how to create CcmsContext
-            //builder.Services.AddDbContext<CcmsContext>(options =>
-            //    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-            //);
 
 
 
-
-            //Creationg here service provider
-            //var provider = builder.Services.BuildServiceProvider();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<CcmsContext>();
+                SeedData(context);
+            }
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -72,6 +60,57 @@ namespace Student_Service_
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static void SeedData(CcmsContext context)
+        {
+            try
+            {
+                context.Database.EnsureCreated();
+
+                if (!context.Roles.Any())
+                {
+                    context.Roles.AddRange(
+                        new Role { RName = "admin" },
+                        new Role { RName = "student" }
+                    );
+                    context.SaveChanges();
+                }
+
+                var adminRole = context.Roles.First(r => r.RName == "admin");
+                var studentRole = context.Roles.First(r => r.RName == "student");
+
+                var clubHeadUser = context.Users.FirstOrDefault(u => u.Email == "clubhead@college.edu");
+                if (clubHeadUser != null && !context.Clubs.Any(c => c.UId == clubHeadUser.UId))
+                {
+                    var testClub = new Club
+                    {
+                        Clubname = "Tech Innovation Club",
+                        Description = "A club focused on technological innovation and entrepreneurship",
+                        Creationdate = DateOnly.FromDateTime(DateTime.Now.AddDays(-30)),
+                        Status = true, // Approved
+                        UId = clubHeadUser.UId
+                    };
+                    context.Clubs.Add(testClub);
+                    context.SaveChanges();
+
+                    var clubMember = new ClubMember
+                    {
+                        UId = clubHeadUser.UId,
+                        CId = testClub.CId,
+                        Position = "club_head",
+                        ReqStatus = true
+                    };
+                    context.ClubMembers.Add(clubMember);
+                    context.SaveChanges();
+                }
+
+                Console.WriteLine("Data seeding completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error seeding data: {ex.Message}");
+            }
         }
     }
 }

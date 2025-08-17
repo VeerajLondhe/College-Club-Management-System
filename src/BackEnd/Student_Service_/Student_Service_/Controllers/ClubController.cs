@@ -51,7 +51,7 @@ namespace Student_Service_.Controllers
             return Ok(joinedClubs);
         }
 
-        //Available clubs----------------------------------------------------------------------------------
+        
         [HttpGet("available/{userId}")]
         public async Task<ActionResult<IEnumerable<NonJoinedClubDto>>> GetNonJoinedClubs(int userId)
         {
@@ -72,7 +72,47 @@ namespace Student_Service_.Controllers
 
             return Ok(availableClubs);
         }
+        [HttpDelete("leave")]
+        public async Task<IActionResult> LeaveClub([FromBody] LeaveClubDto leaveDto)
+        {
+            var membership = await _context.ClubMembers
+                .Include(cm => cm.CIdNavigation) 
+                .FirstOrDefaultAsync(cm => cm.UId == leaveDto.UserId && cm.CId == leaveDto.ClubId);
 
-        
+            if (membership == null)
+            {
+                return NotFound("You are not a member of this club.");
+            }
+            if (membership.CIdNavigation?.UId == leaveDto.UserId)
+            {
+                return BadRequest("As the club head, you cannot leave your own club. Please delete the club or transfer ownership.");
+            }
+            _context.ClubMembers.Remove(membership);
+            await _context.SaveChangesAsync();
+
+            return Ok("You have successfully left the club.");
+        }
+
+        [HttpGet("{clubId}/is-member/{userId}")]
+        public async Task<IActionResult> IsUserMemberOfClub(int clubId, int userId)
+        {
+            var isMember = await _context.ClubMembers
+                .AnyAsync(cm => cm.CId == clubId && cm.UId == userId && cm.ReqStatus == true);
+
+            return Ok(new { isMember = isMember });
+        }
+
+        [HttpGet("user/{userId}/memberships")]
+        public async Task<IActionResult> GetUserClubMemberships(int userId)
+        {
+            var memberships = await _context.ClubMembers
+                .Where(cm => cm.UId == userId && cm.ReqStatus == true)
+                .Select(cm => new { clubId = cm.CId, position = cm.Position })
+                .ToListAsync();
+
+            return Ok(memberships);
+        }
+
+
     }
 }
