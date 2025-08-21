@@ -371,32 +371,6 @@
   },
   {
     "ContainingType": "Student_Service_.Controllers.StudentController",
-    "Method": "Login",
-    "RelativePath": "api/Student/login",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "loginDto",
-        "Type": "Student_Service_.DTO.LoginDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Student_Service_.Controllers.StudentController",
-    "Method": "GetCurrentUser",
-    "RelativePath": "api/Student/me",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Student_Service_.Controllers.StudentController",
     "Method": "GetClubMembers",
     "RelativePath": "api/Student/members/{headUserId}",
     "HttpMethod": "GET",

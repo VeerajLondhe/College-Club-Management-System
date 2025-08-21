@@ -2,7 +2,7 @@
 {
     public class ClubJoinRequestViewDto
     {
-        public int ClubMemberId { get; set; } 
+        public int ClubMemberId { get; set; } // The ID of the membership request itself
         public int RequestingUserId { get; set; }
         public string RequestingUsername { get; set; }
     }
