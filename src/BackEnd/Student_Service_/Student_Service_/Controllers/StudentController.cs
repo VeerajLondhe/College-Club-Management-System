@@ -4,13 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Student_Service_.DTO;
 using Student_Service_.Models;
 using System.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
+
 using System.Security.Claims;
 using System.Text;
 
 namespace Student_Service_.Controllers
-{   
+{   //localhost:8080/api/Student
     [Route("api/[controller]")]
     [ApiController]
     public class StudentController : ControllerBase
@@ -30,7 +29,7 @@ namespace Student_Service_.Controllers
         }
 
 
-       
+        //---------------------------------------------------------------------------------------------------
         [HttpPost("request")]
         public async Task<IActionResult> RequestClubCreation(ClubCreationRequestDto requestDto)
         {
@@ -81,7 +80,7 @@ namespace Student_Service_.Controllers
                 return NotFound("User or Club not found.");
             }
 
-            
+            //
             if (club.Status == false)
             {
                 return BadRequest("This club is not currently active and cannot be joined.");
@@ -117,6 +116,7 @@ namespace Student_Service_.Controllers
             return StatusCode(201, "Your request to join the club has been sent and is pending approval.");
         }
 
+        //-----------------------------------------------------------------------------------------------------
         [HttpGet("requests/{headUserId}")]
         public async Task<ActionResult<IEnumerable<ClubJoinRequestViewDto>>> GetPendingJoinRequests(int headUserId)
         {
@@ -141,7 +141,7 @@ namespace Student_Service_.Controllers
         return Ok(pendingRequests);
     }
 
-        //------------------------------------
+        //------------------------------------------------------------------------------------------------------------
 
         [HttpPut("approve")]
         public async Task<IActionResult> ApproveJoinRequest([FromBody] ApproveJoinRequestDto approveDto)
@@ -251,40 +251,22 @@ namespace Student_Service_.Controllers
             return Ok(clubDto);
         }
 
+        //[HttpPost]
+        //public IActionResult sentRequest(ClubDto c)
+        //{
+        //    Club c1 = new Club()
+        //    {
+        //        Clubname = c.Clubname,
+        //        Description = c.Description,
+        //        Creationdate=c.Creationdate,
+        //        Status = c.Status,  
+        //        UId
+        //    };
+
+        //}
+
         
 
-      
        
-        private string GenerateJwtToken(int userId, string email, string role)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("your-256-bit-secret-key-that-should-be-stored-securely"); // Should be in config
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim("userId", userId.ToString()),
-                    new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Role, role)
-                }),
-                Expires = DateTime.UtcNow.AddHours(24),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-
-        [HttpGet("me")]
-        public async Task<IActionResult> GetCurrentUser()
-        {
-            try
-            {
-                return Ok(new { message = "User profile endpoint" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Internal server error", error = ex.Message });
-            }
-        }
     }
 }

@@ -15,9 +15,11 @@ namespace Student_Service_.Controllers
             _context = context;
         }
 
+        // Added endpoints for frontend integration - Member Management
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<object>>> GetAllMembers()
         {
+            // Get all users and process them in memory to avoid expression tree issues
             var users = await _context.Users.ToListAsync();
             
             var members = users.Select(u => new
@@ -29,9 +31,9 @@ namespace Student_Service_.Controllers
                 studentId = u.UId.ToString(),
                 phone = u.Phoneno ?? "",
                 department = u.DName ?? "",
-                year = "Senior",
-                joinDate = DateTime.Now.ToString("yyyy-MM-dd"), 
-                status = "Active" 
+                year = "Senior", // TODO: Add year field to User model
+                joinDate = DateTime.Now.ToString("yyyy-MM-dd"), // TODO: Add join date to User model
+                status = "Active" // TODO: Add status field to User model
             }).ToList();
 
             return Ok(members);
@@ -66,14 +68,14 @@ namespace Student_Service_.Controllers
         [HttpPost]
         public ActionResult<object> CreateMember([FromBody] dynamic memberData)
         {
-       
+            // TODO: Implement member creation logic
             return Ok(new { message = "Member created successfully" });
         }
 
         [HttpPut("{id}")]
         public ActionResult<object> UpdateMember(int id, [FromBody] dynamic memberData)
         {
-       
+            // TODO: Implement member update logic
             return Ok(new { message = "Member updated successfully" });
         }
 
@@ -86,20 +88,24 @@ namespace Student_Service_.Controllers
                 return NotFound(new { success = false, message = "Member not found" });
             }
 
+            // TODO: Implement member deletion logic
+            // _context.Users.Remove(user);
+            // await _context.SaveChangesAsync();
+
             return Ok(new { success = true, message = "Member deleted successfully" });
         }
 
         [HttpGet("{memberId}/clubs")]
         public ActionResult<IEnumerable<object>> GetMemberClubs(int memberId)
         {
-        
+            // TODO: Implement get member clubs logic
             return Ok(new List<object>());
         }
 
         [HttpGet("{memberId}/events")]
         public ActionResult<IEnumerable<object>> GetMemberEvents(int memberId)
         {
-     
+            // TODO: Implement get member events logic
             return Ok(new List<object>());
         }
 
@@ -111,7 +117,7 @@ namespace Student_Service_.Controllers
                 return Ok(new List<object>());
             }
 
-          
+            // Get filtered users first, then process in memory to avoid expression tree issues
             var users = await _context.Users
                 .Where(u => (u.Uname != null && u.Uname.Contains(q)) || (u.Email != null && u.Email.Contains(q)))
                 .ToListAsync();
